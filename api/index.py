@@ -6,6 +6,14 @@ from bs4 import BeautifulSoup
 # Initialize the Flask application
 app = Flask(__name__)
 
+# Add a GET route for the root to handle direct access
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({
+        'message': 'Web Scraper API is running!',
+        'usage': 'Send a POST request with {"url": "news_website_url"} to scrape headlines'
+    })
+
 # This is the main API route. Vercel will direct requests here.
 # It only accepts POST requests, which is what our frontend will send.
 @app.route('/', methods=['POST'])
@@ -52,3 +60,6 @@ def scrape():
     except Exception as e:
         # Handle any other unexpected errors
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
+
+# For Vercel deployment - this is the handler function
+app = app
