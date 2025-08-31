@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Headline Scraper</title>
+    <!-- Import Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Link to the stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📰 AI News Headline Scraper</h1>
+            <p>Enter a news website URL to instantly extract all headlines.</p>
+        </header>
+        
+        <form id="scrape-form">
+            <input type="url" id="url-input" placeholder="e.g., https://www.bbc.com/news" required>
+            <button type="submit" id="scrape-button">
+                <span class="button-text">Scrape Headlines</span>
+            </button>
+        </form>
+
+        <div id="loader" class="loader" style="display: none;"></div>
+        <div id="error-message" class="error-box"></div>
+        <div id="results-container"></div>
+    </div>
+
+    <script>
+        document.getElementById('scrape-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const url = document.getElementById('url-input').value;
+            const resultsContainer = document.getElementById('results-container');
+            const loader = document.getElementById('loader');
+            const errorMessage = document.getElementById('error-message');
+            const button = document.getElementById('scrape-button');
+            const buttonText = button.querySelector('.button-text');
+
+            resultsContainer.innerHTML = '';
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            loader.style.display = 'block';
+            button.disabled = true;
+            buttonText.textContent = 'Scraping...';
+
+            try {
+                const response = await fetch('/api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'The server returned an error.');
+                }
+
+                const headlines = await response.json();
+
+                if (headlines.length === 0) {
+                    resultsContainer.innerHTML = '<p class="no-results">No headlines could be found on this page.</p>';
+                } else {
+                    // UPDATED: Added 'index' to create a staggered animation effect
+                    headlines.forEach((item, index) => {
+                        const article = document.createElement('div');
+                        article.className = 'article';
+                        
+                        // ADDED: Set a staggered animation delay for each card
+                        article.style.animationDelay = `${index * 100}ms`;
+
+                        article.innerHTML = `
+                            <h2>${item.title}</h2>
+                            <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.link}</a>
+                        `;
+                        resultsContainer.appendChild(article);
+                    });
+                }
+
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+                button.disabled = false;
+                buttonText.textContent = 'Scrape Headlines';
+            }
+        });
+    </script>
+</body>
+</html>
+
