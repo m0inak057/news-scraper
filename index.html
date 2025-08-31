@@ -49,7 +49,9 @@
             buttonText.textContent = 'Scraping...';
 
             try {
-                const response = await fetch('/api', {
+                // --- THIS IS THE FIX ---
+                // The API path on Vercel needs to point to the specific file.
+                const response = await fetch('/api/index', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
@@ -65,14 +67,10 @@
                 if (headlines.length === 0) {
                     resultsContainer.innerHTML = '<p class="no-results">No headlines could be found on this page.</p>';
                 } else {
-                    // UPDATED: Added 'index' to create a staggered animation effect
                     headlines.forEach((item, index) => {
                         const article = document.createElement('div');
                         article.className = 'article';
-                        
-                        // ADDED: Set a staggered animation delay for each card
                         article.style.animationDelay = `${index * 100}ms`;
-
                         article.innerHTML = `
                             <h2>${item.title}</h2>
                             <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.link}</a>
@@ -93,4 +91,3 @@
     </script>
 </body>
 </html>
-
