@@ -49,9 +49,9 @@
             buttonText.textContent = 'Scraping...';
 
             try {
-                // --- THIS IS THE FIX ---
-                // The API path on Vercel needs to point to the specific file.
-                const response = await fetch('/api/index', {
+                // --- THIS IS THE FINAL FIX ---
+                // We now call the clean '/api/scrape' endpoint defined in vercel.json
+                const response = await fetch('/api/scrape', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
@@ -91,3 +91,4 @@
     </script>
 </body>
 </html>
+
