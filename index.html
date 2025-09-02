@@ -49,9 +49,8 @@
             buttonText.textContent = 'Scraping...';
 
             try {
-                // --- THIS IS THE FINAL FIX ---
-                // We now call the clean '/api/scrape' endpoint defined in vercel.json
-                const response = await fetch('/api/scrape', {
+                // Updated API endpoint to match vercel.json routing
+                const response = await fetch('/api/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
